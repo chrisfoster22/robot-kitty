@@ -43,10 +43,10 @@ function Game(levels, robot, kitty) {
 		robotOrKitty.coords = level[robotOrKitty.name + "Placement"];
 		var placeRow = robotOrKitty.coords[0];
 		var placeColumn = robotOrKitty.coords[1];
-		var robotOrKittyDiv = document.createElement("div");
-		robotOrKittyDiv.classList.add(robotOrKitty.name);
-		document.getElementsByClassName("row")[placeRow].getElementsByTagName("div")[placeColumn].append(robotOrKittyDiv);
-		robotOrKitty.element = robotOrKittyDiv;
+		var robotOrKittySpan = document.createElement("span");
+		robotOrKittySpan.classList.add(robotOrKitty.name);
+		document.getElementsByClassName("row")[placeRow].getElementsByTagName("div")[placeColumn].append(robotOrKittySpan);
+		robotOrKitty.element = robotOrKittySpan;
 	}
 
 	function generateRow(innerMapArray, row) {
@@ -108,25 +108,36 @@ function Robot() {
 				break;
 			case "up":
 				for (var i = this.coords[0] - 1; i > this.coords[0] - 1 - amount; i-- ) {
-					console.log(this.coords);
-					var checkSquare = document.getElementsByClassName("row")[i].getElementsByTagName("div")[this.coords[1]];
-					if (!checkSquare || !checkSquare.classList.contains("empty")) {
+					let checkRow = document.getElementsByClassName("row")[i];
+					console.log(checkRow);
+					if (checkRow) {
+						let checkSquare = checkRow.getElementsByTagName("div")[this.coords[1]];
+							if (!checkSquare || !checkSquare.classList.contains("empty")) {
+								alert("Sorry");
+								return;
+							}
+						} else {
 						alert("Sorry");
 						return;
 					}
-
 				}
 				this.element.style["top"] = currentTop - (amount * 75 + (amount * 2)) + "px";
 				this.coords[0] -= amount;
 				break;
 			case "down":
-				for (var i = this.coords[0] + 1; i > this.coords[0] + 1 + amount; i++ ) {
-					var checkSquare = document.getElementsByClassName("row")[i].getElementsByTagName("div")[this.coords[1]];
-					if (!checkSquare || !checkSquare.classList.contains("empty")) {
+				for (var i = this.coords[0] + 1; i < this.coords[0] + 1 + amount; i++ ) {
+					let checkRow = document.getElementsByClassName("row")[i];
+					console.log(checkRow);
+					if (checkRow) {
+						let checkSquare = checkRow.getElementsByTagName("div")[this.coords[1]];
+							if (!checkSquare || !checkSquare.classList.contains("empty")) {
+								alert("Sorry");
+								return;
+							}
+						} else {
 						alert("Sorry");
 						return;
 					}
-
 				}
 				this.element.style["top"] = currentTop + (amount * 75 + (amount * 2)) + "px";
 				this.coords[0] += amount;
