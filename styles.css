@@ -30,17 +30,36 @@
 	width: 75px;
 	height: 75px;
 	display: inline-block;
-	border-left: 1px solid black;
+	border-left: 2px solid black;
 	border-right: 1px solid black;
 }
 
-.square:first-of-type {
-	border-left: 2px solid black;
+.square ~ .square {
+	border-left: 1px solid black;
 }
 
 
 .square:last-of-type {
 	border-right: 2px solid black;
+}
+
+.robot {
+	width: 75px;
+	height: 75px;
+	background-image: url('robot.png');
+	background-size: 65% 80%;
+	background-repeat: no-repeat;
+    background-position: center;
+}
+
+.kitty {
+	width: 75px;
+	height: 75px;
+	background-image: url('kitty.png');
+	background-size: 90% 80%;
+	background-repeat: no-repeat;
+	background-position: center;
+
 }
 
 .mountain {
