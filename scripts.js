@@ -69,11 +69,69 @@ function Game(levels, robot, kitty) {
 
 function Robot() {
 	this.name = "robot";
+	this.element,
+	this.coords;
+
 	this.move = move;
 
 	function move(direction, amount) {
-		console.log(this.element.style[direction]);
-		this.element.style[direction] = -(amount * 75 + (amount * 2)) + "px";
+		var currentLeft = parseInt(this.element.style["left"].split("px")[0]) || 0;
+		var currentTop = parseInt(this.element.style["top"].split("px")[0]) || 0;
+		switch(direction) {
+			case "left":
+			console.log(this.coords[1] - amount)
+				for (var i = this.coords[1] - 1; i > this.coords[1] - 1 - amount; i-- ) {
+					var checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
+					if (!checkSquare || !checkSquare.classList.contains("empty")) {
+						alert("Sorry");
+						return;
+					}
+
+				}
+				this.element.style["left"] = currentLeft - (amount * 75 + (amount * 2)) + "px";
+				console.log(this.element.style["left"])
+				this.coords[1] -= amount;
+				break;
+			case "right":
+				for (let i = this.coords[1] + 1; i < this.coords[1] + 1 + amount; i++ ) {
+
+					let checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
+					if (!checkSquare || !checkSquare.classList.contains("empty")) {
+						alert("Sorry");
+						return;
+						break;
+					}
+
+				}
+				this.element.style["left"] = currentLeft + (amount * 75 + (amount * 2)) + "px";
+				this.coords[1] += amount;
+				break;
+			case "up":
+				for (var i = this.coords[0] - 1; i > this.coords[0] - 1 - amount; i-- ) {
+					console.log(this.coords);
+					var checkSquare = document.getElementsByClassName("row")[i].getElementsByTagName("div")[this.coords[1]];
+					if (!checkSquare || !checkSquare.classList.contains("empty")) {
+						alert("Sorry");
+						return;
+					}
+
+				}
+				this.element.style["top"] = currentTop - (amount * 75 + (amount * 2)) + "px";
+				this.coords[0] -= amount;
+				break;
+			case "down":
+				for (var i = this.coords[0] + 1; i > this.coords[0] + 1 + amount; i++ ) {
+					var checkSquare = document.getElementsByClassName("row")[i].getElementsByTagName("div")[this.coords[1]];
+					if (!checkSquare || !checkSquare.classList.contains("empty")) {
+						alert("Sorry");
+						return;
+					}
+
+				}
+				this.element.style["top"] = currentTop + (amount * 75 + (amount * 2)) + "px";
+				this.coords[0] += amount;
+				break;
+		}
 	}
 }
 
