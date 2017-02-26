@@ -1,0 +1,48 @@
+.board-container {
+	width: 300px;
+	margin: 120px auto;
+}
+
+.row {
+	display: inline-flex;
+	border-top: 2px solid black;
+	border-bottom: 2px solid black;
+	/*display: inline-block;*/
+}
+
+.row:not(first-of-type) {
+	margin-top: -4px;
+}
+
+.space {
+	display: inline;
+}
+
+.offset-2 {
+	margin-left: 154px;
+}
+
+.row:first-of-type {
+	border-top: 2px solid black;
+}
+
+.square {
+	width: 75px;
+	height: 75px;
+	display: inline-block;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+}
+
+.square:first-of-type {
+	border-left: 2px solid black;
+}
+
+
+.square:last-of-type {
+	border-right: 2px solid black;
+}
+
+.mountain {
+	background-color: red;
+}
