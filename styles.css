@@ -43,23 +43,25 @@
 	border-right: 2px solid black;
 }
 
-.robot {
+
+.robot, .kitty {
 	width: 75px;
 	height: 75px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.robot {
 	background-image: url('robot.png');
 	background-size: 65% 80%;
-	background-repeat: no-repeat;
-    background-position: center;
+	position: relative;
+	transition: all 2s;
+	left: 0px;
+	right: 0px;
 }
 
 .kitty {
-	width: 75px;
-	height: 75px;
 	background-image: url('kitty.png');
 	background-size: 90% 80%;
-	background-repeat: no-repeat;
-	background-position: center;
-
 }
 
 .mountain {

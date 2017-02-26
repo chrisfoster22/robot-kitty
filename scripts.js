@@ -46,6 +46,7 @@ function Game(levels, robot, kitty) {
 		var robotOrKittyDiv = document.createElement("div");
 		robotOrKittyDiv.classList.add(robotOrKitty.name);
 		document.getElementsByClassName("row")[placeRow].getElementsByTagName("div")[placeColumn].append(robotOrKittyDiv);
+		robotOrKitty.element = robotOrKittyDiv;
 	}
 
 	function generateRow(innerMapArray, row) {
@@ -68,6 +69,12 @@ function Game(levels, robot, kitty) {
 
 function Robot() {
 	this.name = "robot";
+	this.move = move;
+
+	function move(direction, amount) {
+		console.log(this.element.style[direction]);
+		this.element.style[direction] = -(amount * 75 + (amount * 2)) + "px";
+	}
 }
 
 function Kitty() {
