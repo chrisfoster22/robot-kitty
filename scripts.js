@@ -40,17 +40,24 @@ var levelSix = {
 var levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix];
 
 function Game(levels, robot, kitty) {
+	var game = this;
 	this.levels = levels;
+	this.currentLevel = 0;
 	this.start = start;
 	this.generateBoard = generateBoard;
+	this.checkWin = checkWin;
+	this.checkCommands = checkCommands;
 
 	function start() {
-		generateBoard(levels[2]);
+		generateBoard(this.levels[0]);
 		// place(robot);
 		// place(kitty);
 	}
 
 	function generateBoard(level) {
+		board.innerHTML = "";
+		document.getElementsByClassName("command-input-container")[0].innerHTML = "";
+		addLine();
 		for (var i = 0; i < level.board.length; i++) {
 			var row = document.createElement('div');
 			row.classList.add('row');
@@ -90,6 +97,35 @@ function Game(levels, robot, kitty) {
 			row.appendChild(tile);
 		}
 	}
+
+	function checkWin() {
+		console.log(robot.coords, kitty.coords)
+		if (robot.coords[0] === kitty.coords[0] && robot.coords[1] === kitty.coords[1]) {
+			alert("You saved Bad Kitty!");
+			game.currentLevel += 1;
+			game.generateBoard(game.levels[game.currentLevel]);
+		} else {
+			alert("Try again!");
+			game.generateBoard(game.levels[game.currentLevel]);
+			robot.element.style.left = "0px";
+			robot.element.style.top = "0px";
+		}
+	}
+	function checkCommands() {
+		var commands = document.getElementsByClassName("command");
+		for (let i = 0; i < commands.length; i++) {
+			if (commands[i].innerHTML) {
+				setTimeout(function() {
+					var fnName = commands[i].innerHTML.split('(')[0];
+					var fnParams = commands[i].innerHTML.split('(')[1].split(', ');
+					fnParams[1] = parseInt(fnParams[1].slice(0, 1));
+					var fn = robot[fnName];
+					if (typeof fn === "function") fn.apply(robot, fnParams);
+				}, (i * 2200))
+			}
+		}
+		setTimeout(checkWin, (commands.length * 2200))
+	}
 }
 
 function Robot() {
@@ -100,12 +136,10 @@ function Robot() {
 	this.move = move;
 
 	function move(direction, amount) {
-		console.log(direction, amount);
 		var currentLeft = parseInt(this.element.style["left"].split("px")[0]) || 0;
 		var currentTop = parseInt(this.element.style["top"].split("px")[0]) || 0;
 		switch(direction) {
 			case "left":
-			console.log(this.coords[1] - amount)
 				for (var i = this.coords[1] - 1; i > this.coords[1] - 1 - amount; i-- ) {
 					var checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
@@ -115,7 +149,6 @@ function Robot() {
 
 				}
 				this.element.style["left"] = currentLeft - (amount * 75 + (amount * 2)) + "px";
-				console.log(this.element.style["left"])
 				this.coords[1] -= amount;
 				break;
 			case "right":
@@ -151,7 +184,6 @@ function Robot() {
 			case "down":
 				for (var i = this.coords[0] + 1; i < this.coords[0] + 1 + amount; i++ ) {
 					let checkRow = document.getElementsByClassName("row")[i];
-					console.log(checkRow);
 					if (checkRow) {
 						let checkSquare = checkRow.getElementsByTagName("div")[this.coords[1]];
 							if (!checkSquare || !checkSquare.classList.contains("empty")) {
@@ -167,7 +199,9 @@ function Robot() {
 				this.coords[0] += amount;
 				break;
 		}
+
 	}
+
 }
 
 function Kitty() {
@@ -176,10 +210,7 @@ function Kitty() {
 
 function initializeListeners() {
 	document.getElementsByClassName('add-line')[0].addEventListener("click", addLine);
-	document.getElementsByClassName('go-btn')[0].addEventListener("click", checkCommands);
-	var commandDiv = document.getElementsByClassName("command")[0];
-	enterAddLine(commandDiv);
-	commandDiv.focus();
+	document.getElementsByClassName('go-btn')[0].addEventListener("click", myGame.checkCommands);
 };
 
 function addLine() {
@@ -189,21 +220,6 @@ function addLine() {
 	document.getElementsByClassName("command-input-container")[0].append(newLine);
 	enterAddLine(newLine);
 	newLine.focus();
-}
-
-function checkCommands() {
-	var commands = document.getElementsByClassName("command");
-	for (let i = 0; i < commands.length; i++) {
-		setTimeout(function() {
-			var fnName = commands[i].innerHTML.split('(')[0];
-			var fnParams = commands[i].innerHTML.split('(')[1].split(', ');
-			fnParams[1] = parseInt(fnParams[1].slice(0, 1));
-			console.log(fnParams)
-			var fn = robot[fnName];
-			if (typeof fn === "function") fn.apply(robot, fnParams);
-		}, (i * 2200))
-
-	}
 }
 
 function enterAddLine(commandDiv) {
