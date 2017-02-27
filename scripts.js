@@ -44,7 +44,6 @@ var myGame = new Game(levels, robot, kitty);
 
 myGame.start();
 
-
 function Game(levels, robot, kitty) {
 	var game = this;
 	game.levels = levels;
@@ -122,8 +121,14 @@ function Game(levels, robot, kitty) {
 			if (commands[i].innerHTML) {
 				setTimeout(function() {
 					var fnName = commands[i].innerHTML.split('(')[0];
-					var fnParams = commands[i].innerHTML.split('(')[1].split(', ');
-					fnParams[1] = parseInt(fnParams[1].slice(0, 1));
+					var fnParams = [];
+					if (fnName === "move") {
+						fnParams = commands[i].innerHTML.split('(')[1].split(', ');
+						fnParams[1] = parseInt(fnParams[1].slice(0, 1));
+					} else {
+						var directionString = commands[i].innerHTML.split('(')[1];
+						fnParams[0] = directionString.substring(0, directionString.length - 1);
+					}
 					var fn = robot[fnName];
 					if (typeof fn === "function") fn.apply(robot, fnParams);
 				}, (i * 2200))
@@ -164,27 +169,33 @@ function Robot() {
 	this.coords;
 
 	this.move = move;
+	this.jump = jump;
 
-	function move(direction, amount) {
+	function move(direction, amount, jumpAmount) {
+		var jumpAmount = jumpAmount || 1;
 		var currentLeft = parseInt(this.element.style["left"].split("px")[0]) || 0;
 		var currentTop = parseInt(this.element.style["top"].split("px")[0]) || 0;
 		switch(direction) {
 			case "left":
-				for (var i = this.coords[1] - 1; i > this.coords[1] - 1 - amount; i-- ) {
+				for (var i = this.coords[1] - jumpAmount; i > this.coords[1] - 1 - amount; i-- ) {
+
 					var checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
+					console.log(checkSquare);
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
+						console.log("Left", checkSquare);
 						alert("Sorry");
 						return;
 					}
-
 				}
 				this.element.style["left"] = currentLeft - (amount * 75 + (amount * 2)) + "px";
 				this.coords[1] -= amount;
 				break;
 			case "right":
-				for (let i = this.coords[1] + 1; i < this.coords[1] + 1 + amount; i++ ) {
-					let checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
+				for (var i = this.coords[1] + jumpAmount; i < this.coords[1] + 1 + amount; i++ ) {
+					var checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
+					console.log(checkSquare)
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
+						console.log(checkSquare)
 						alert("Sorry");
 						return;
 						break;
@@ -195,16 +206,16 @@ function Robot() {
 				this.coords[1] += amount;
 				break;
 			case "up":
-				for (var i = this.coords[0] - 1; i > this.coords[0] - 1 - amount; i-- ) {
-					let checkRow = document.getElementsByClassName("row")[i];
+				for (var i = this.coords[0] - jumpAmount; i > this.coords[0] - 1 - amount; i-- ) {
+					var checkRow = document.getElementsByClassName("row")[i];
 					if (checkRow) {
-						let checkSquare = checkRow.getElementsByTagName("div")[this.coords[1]];
+						var checkSquare = checkRow.getElementsByTagName("div")[this.coords[1]];
 							if (!checkSquare || !checkSquare.classList.contains("empty")) {
 								alert("Sorry");
 								return;
 							}
 						} else {
-						alert("Sorry");
+						errorType(checkSquare)
 						return;
 					}
 				}
@@ -212,10 +223,10 @@ function Robot() {
 				this.coords[0] -= amount;
 				break;
 			case "down":
-				for (var i = this.coords[0] + 1; i < this.coords[0] + 1 + amount; i++ ) {
-					let checkRow = document.getElementsByClassName("row")[i];
+				for (var i = this.coords[0] + jumpAmount; i < this.coords[0] + 1 + amount; i++ ) {
+					var checkRow = document.getElementsByClassName("row")[i];
 					if (checkRow) {
-						let checkSquare = checkRow.getElementsByTagName("div")[this.coords[1]];
+						var checkSquare = checkRow.getElementsByTagName("div")[this.coords[1]];
 							if (!checkSquare || !checkSquare.classList.contains("empty")) {
 								alert("Sorry");
 								return;
@@ -230,6 +241,39 @@ function Robot() {
 				break;
 		}
 
+	}
+
+	function jump(direction) {
+		switch (direction) {
+			case "left":
+				var checkRow = document.getElementsByClassName("row")[this.coords[0]];
+				var checkSquare = checkRow.getElementsByClassName("square")[this.coords[1] -1];
+				checkSquareForMountains.apply(this, [checkSquare, "left"])
+			break;
+			case "right":
+				var checkRow = document.getElementsByClassName("row")[this.coords[0]];
+				var checkSquare = checkRow.getElementsByClassName("square")[this.coords[1] + 1];
+				checkSquareForMountains.apply(this, [checkSquare, "right"])
+			break;
+			case "up":
+				var checkRow = document.getElementsByClassName("row")[this.coords[0] -1];
+				var checkSquare = checkRow.getElementsByClassName("square")[this.coords[1]];
+				checkSquareForMountains.apply(this, [checkSquare, "up"])
+			break;
+			case "down":
+				var checkRow = document.getElementsByClassName("row")[this.coords[0] + 1];
+				var checkSquare = checkRow.getElementsByClassName("square")[this.coords[1]];
+				checkSquareForMountains.apply(this, [checkSquare, "down"])
+			break;
+		}
+	}
+
+	function checkSquareForMountains(square, direction) {
+		if (square.classList.contains("mountain")) {
+			alert("I can't jump over mountains!");
+		} else {
+			this.move(direction, 2, 2);
+		}
 	}
 
 }
