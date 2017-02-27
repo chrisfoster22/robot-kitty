@@ -2,36 +2,42 @@
 var levelOne = {
 	kittyPlacement: [0, 1],
 	robotPlacement: [4, 4],
+	commandsAvailable: ["move(direction, distance)"],
 	board: [['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty']]
 }
 
 var levelTwo = {
 	kittyPlacement: [1, 1],
 	robotPlacement: [4, 4],
+	commandsAvailable: ["move(direction, distance)"],
 	board: [['empty', 'empty', 'empty'], ['empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ["offset 2", "offset-2", "empty", "empty", "empty"], ["offset 2", "offset-2", "empty", "empty", "empty"]]
 }
 
 var levelThree = {
 	kittyPlacement: [2, 2],
 	robotPlacement: [4, 0],
+	commandsAvailable: ["move(direction, distance)"],
 	board: [['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'mountain', 'empty'], ['empty', 'empty', 'empty', 'mountain', 'empty'], ['mountain', 'mountain', 'mountain', 'mountain', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty']]
 }
 
 var levelFour = {
 	kittyPlacement: [0, 1],
 	robotPlacement: [4, 4],
+	commandsAvailable: ["move(direction, distance)", "jump(direction)"],
 	board: [['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ["river", "river", "river", "river", "river"], ["empty", "empty", "empty", "empty", "empty"]]
 }
 
 var levelFive = {
 	kittyPlacement: [0, 1],
 	robotPlacement: [4, 4],
+	commandsAvailable: ["move(direction, distance)", "jump(direction)"],
 	board: [['empty', 'empty', 'empty', 'empty', 'empty'], ["river", "river", "river", "river", "river"], ['empty', 'empty', 'empty', 'empty', 'empty'], ["river", "river", "river", "river", "river"], ["empty", "empty", "empty", "empty", "empty"]]
 }
 
 var levelSix = {
 	kittyPlacement: [4, 0],
 	robotPlacement: [0, 4],
+	commandsAvailable: ["move(direction, distance)", "jump(direction)"],
 	board: [['mountain', 'mountain', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'river', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'empty', 'empty']]
 }
 
@@ -55,7 +61,7 @@ function Game(levels, robot, kitty) {
 	game.board = document.getElementsByClassName('board-container')[0];
 
 	function start() {
-		generateBoard(game.levels[0]);
+		generateBoard(game.levels[3]);
 		initializeListeners();
 	}
 
@@ -63,6 +69,7 @@ function Game(levels, robot, kitty) {
 		game.board.innerHTML = "";
 		document.getElementsByClassName("command-input-container")[0].innerHTML = "";
 		addLine();
+		document.getElementsByClassName("command-list")[0].innerHTML = level.commandsAvailable.join("<br>");
 		for (var i = 0; i < level.board.length; i++) {
 			var row = document.createElement('div');
 			row.classList.add('row');

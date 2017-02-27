@@ -56,9 +56,9 @@ h2, h3 {
 	color: #fff;
 }
 
-.command-list {
+.command-list-container {
 	position: absolute;
-	bottom: -50px;
+	bottom: -80px;
 	left: 0;
 	width: 100%;
 }
