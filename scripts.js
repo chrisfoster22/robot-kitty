@@ -1,4 +1,3 @@
-var board = document.getElementsByClassName('board-container')[0];
 
 var levelOne = {
 	kittyPlacement: [0, 1],
@@ -36,32 +35,39 @@ var levelSix = {
 	board: [['mountain', 'mountain', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'river', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'empty', 'empty']]
 }
 
-
 var levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix];
+
+var robot = new Robot();
+var kitty = new Kitty();
+
+var myGame = new Game(levels, robot, kitty);
+
+myGame.start();
+
 
 function Game(levels, robot, kitty) {
 	var game = this;
-	this.levels = levels;
-	this.currentLevel = 0;
-	this.start = start;
-	this.generateBoard = generateBoard;
-	this.checkWin = checkWin;
-	this.checkCommands = checkCommands;
+	game.levels = levels;
+	game.currentLevel = 0;
+	game.start = start;
+	game.generateBoard = generateBoard;
+	game.checkWin = checkWin;
+	game.checkCommands = checkCommands;
+	game.board = document.getElementsByClassName('board-container')[0];
 
 	function start() {
-		generateBoard(this.levels[0]);
-		// place(robot);
-		// place(kitty);
+		generateBoard(game.levels[0]);
+		initializeListeners();
 	}
 
 	function generateBoard(level) {
-		board.innerHTML = "";
+		game.board.innerHTML = "";
 		document.getElementsByClassName("command-input-container")[0].innerHTML = "";
 		addLine();
 		for (var i = 0; i < level.board.length; i++) {
 			var row = document.createElement('div');
 			row.classList.add('row');
-			board.appendChild(row);
+			game.board.appendChild(row);
 			generateRow(level.board[i], row);
 		}
 
@@ -99,7 +105,6 @@ function Game(levels, robot, kitty) {
 	}
 
 	function checkWin() {
-		console.log(robot.coords, kitty.coords)
 		if (robot.coords[0] === kitty.coords[0] && robot.coords[1] === kitty.coords[1]) {
 			alert("You saved Bad Kitty!");
 			game.currentLevel += 1;
@@ -126,6 +131,31 @@ function Game(levels, robot, kitty) {
 		}
 		setTimeout(checkWin, (commands.length * 2200))
 	}
+
+	function addLine() {
+		var newLine = document.createElement("div");
+		newLine.contentEditable = "true";
+		newLine.classList.add("command");
+		document.getElementsByClassName("command-input-container")[0].append(newLine);
+		enterAddLine(newLine);
+		newLine.focus();
+	}
+
+	function enterAddLine(commandDiv) {
+		commandDiv.addEventListener("keypress", function(event) {
+			var keyCode = event.which || event.keyCode;
+			if (keyCode === 13) {
+				event.preventDefault();
+				addLine();
+			}
+		})
+	}
+
+	function initializeListeners() {
+		document.getElementsByClassName('add-line')[0].addEventListener("click", addLine);
+		document.getElementsByClassName('go-btn')[0].addEventListener("click", game.checkCommands);
+	};
+
 }
 
 function Robot() {
@@ -207,35 +237,3 @@ function Robot() {
 function Kitty() {
 	this.name = "kitty";
 }
-
-function initializeListeners() {
-	document.getElementsByClassName('add-line')[0].addEventListener("click", addLine);
-	document.getElementsByClassName('go-btn')[0].addEventListener("click", myGame.checkCommands);
-};
-
-function addLine() {
-	var newLine = document.createElement("div");
-	newLine.contentEditable = "true";
-	newLine.classList.add("command");
-	document.getElementsByClassName("command-input-container")[0].append(newLine);
-	enterAddLine(newLine);
-	newLine.focus();
-}
-
-function enterAddLine(commandDiv) {
-	commandDiv.addEventListener("keypress", function(event) {
-		var keyCode = event.which || event.keyCode;
-		if (keyCode === 13) {
-			event.preventDefault();
-			addLine();
-		}
-	})
-}
-
-var robot = new Robot();
-var kitty = new Kitty();
-
-var myGame = new Game(levels, robot, kitty);
-
-myGame.start();
-initializeListeners();
