@@ -12,7 +12,32 @@ var levelTwo = {
 	board: [['empty', 'empty', 'empty'], ['empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ["offset 2", "offset-2", "empty", "empty", "empty"], ["offset 2", "offset-2", "empty", "empty", "empty"]]
 }
 
-var levels = [levelOne, levelTwo];
+var levelThree = {
+	kittyPlacement: [2, 2],
+	robotPlacement: [4, 0],
+	board: [['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'mountain', 'empty'], ['empty', 'empty', 'empty', 'mountain', 'empty'], ['mountain', 'mountain', 'mountain', 'mountain', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty']]
+}
+
+var levelFour = {
+	kittyPlacement: [0, 1],
+	robotPlacement: [4, 4],
+	board: [['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ["river", "river", "river", "river", "river"], ["empty", "empty", "empty", "empty", "empty"]]
+}
+
+var levelFive = {
+	kittyPlacement: [0, 1],
+	robotPlacement: [4, 4],
+	board: [['empty', 'empty', 'empty', 'empty', 'empty'], ["river", "river", "river", "river", "river"], ['empty', 'empty', 'empty', 'empty', 'empty'], ["river", "river", "river", "river", "river"], ["empty", "empty", "empty", "empty", "empty"]]
+}
+
+var levelSix = {
+	kittyPlacement: [4, 0],
+	robotPlacement: [0, 4],
+	board: [['mountain', 'mountain', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'river', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'empty', 'empty']]
+}
+
+
+var levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix];
 
 function Game(levels, robot, kitty) {
 	this.levels = levels;
@@ -20,7 +45,7 @@ function Game(levels, robot, kitty) {
 	this.generateBoard = generateBoard;
 
 	function start() {
-		generateBoard(levels[1]);
+		generateBoard(levels[2]);
 		// place(robot);
 		// place(kitty);
 	}
@@ -150,9 +175,29 @@ function Kitty() {
 	this.name = "kitty";
 }
 
+function initializeListeners() {
+	document.getElementsByClassName('add-line')[0].addEventListener("click", addLine)
+	document.getElementsByClassName('go-btn')[0].addEventListener("click", checkCommands)
+}
+
+function addLine() {
+	var newLine = document.createElement("div");
+	newLine.contentEditable = "true";
+	newLine.classList.add("command");
+	document.getElementsByClassName("command-input-container")[0].append(newLine);
+}
+
+function checkCommands() {
+	var commands = document.getElementsByClassName("command");
+	for (let i = 0; i < commands.length; i++) {
+		console.log(commands[i].innerHTML);
+	}
+}
+
 var robot = new Robot();
 var kitty = new Kitty();
 
 var myGame = new Game(levels, robot, kitty);
 
 myGame.start();
+initializeListeners();

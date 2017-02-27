@@ -1,6 +1,66 @@
-.board-container {
-	width: 300px;
+.main-container {
+	display: flex;
+	font-family: helvetica;
 	margin: 120px auto;
+}
+
+.board-container {
+	display: inline-block;
+	width: 40%;
+	margin: 0 auto;
+}
+
+.command-container {
+	display: inline-block;
+	width: 30%;
+	margin: 0 auto;
+	box-sizing: border-box;
+	padding: 20px;
+	height: auto;
+	position: relative;
+}
+
+h2, h3 {
+	margin: 0 0 20px;
+	text-align: center;
+}
+
+.command {
+	border-bottom: 2px solid black;
+	margin-top: 10px;
+	font-size: 24px;
+	font-family: monospace;
+	text-align: center;
+}
+
+.command:focus {
+	outline: none;
+}
+
+.add-line {
+	font-size: 20px;
+	margin: 10px auto;
+	text-align: center;
+	cursor: pointer;
+}
+
+.go-btn {
+	margin-top: 20px;
+	cursor: pointer;
+	text-align: center;
+	font-size: 24px;
+	padding: 10px;
+	border-radius: 20px;
+	border: 2px solid darkgreen;
+	background-color: lightgreen;
+	color: #fff;
+}
+
+.command-list {
+	position: absolute;
+	bottom: -50px;
+	left: 0;
+	width: 100%;
 }
 
 .row {
@@ -44,7 +104,7 @@
 }
 
 
-.robot, .kitty {
+.robot, .kitty, .river, .mountain {
 	display: block;
 	width: 75px;
 	height: 75px;
@@ -66,5 +126,9 @@
 }
 
 .mountain {
-	background-color: red;
+	background-image: url("mountain.png");
+}
+
+.river {
+	background-image: url("river.png");
 }
