@@ -100,6 +100,7 @@ function Robot() {
 	this.move = move;
 
 	function move(direction, amount) {
+		console.log(direction, amount);
 		var currentLeft = parseInt(this.element.style["left"].split("px")[0]) || 0;
 		var currentTop = parseInt(this.element.style["top"].split("px")[0]) || 0;
 		switch(direction) {
@@ -119,7 +120,6 @@ function Robot() {
 				break;
 			case "right":
 				for (let i = this.coords[1] + 1; i < this.coords[1] + 1 + amount; i++ ) {
-
 					let checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
 						alert("Sorry");
@@ -134,7 +134,6 @@ function Robot() {
 			case "up":
 				for (var i = this.coords[0] - 1; i > this.coords[0] - 1 - amount; i-- ) {
 					let checkRow = document.getElementsByClassName("row")[i];
-					console.log(checkRow);
 					if (checkRow) {
 						let checkSquare = checkRow.getElementsByTagName("div")[this.coords[1]];
 							if (!checkSquare || !checkSquare.classList.contains("empty")) {
@@ -181,7 +180,7 @@ function initializeListeners() {
 	var commandDiv = document.getElementsByClassName("command")[0];
 	enterAddLine(commandDiv);
 	commandDiv.focus();
-}
+};
 
 function addLine() {
 	var newLine = document.createElement("div");
@@ -195,7 +194,15 @@ function addLine() {
 function checkCommands() {
 	var commands = document.getElementsByClassName("command");
 	for (let i = 0; i < commands.length; i++) {
-		console.log(commands[i].innerHTML);
+		setTimeout(function() {
+			var fnName = commands[i].innerHTML.split('(')[0];
+			var fnParams = commands[i].innerHTML.split('(')[1].split(', ');
+			fnParams[1] = parseInt(fnParams[1].slice(0, 1));
+			console.log(fnParams)
+			var fn = robot[fnName];
+			if (typeof fn === "function") fn.apply(robot, fnParams);
+		}, (i * 2200))
+
 	}
 }
 
