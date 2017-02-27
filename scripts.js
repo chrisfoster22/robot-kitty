@@ -176,8 +176,11 @@ function Kitty() {
 }
 
 function initializeListeners() {
-	document.getElementsByClassName('add-line')[0].addEventListener("click", addLine)
-	document.getElementsByClassName('go-btn')[0].addEventListener("click", checkCommands)
+	document.getElementsByClassName('add-line')[0].addEventListener("click", addLine);
+	document.getElementsByClassName('go-btn')[0].addEventListener("click", checkCommands);
+	var commandDiv = document.getElementsByClassName("command")[0];
+	enterAddLine(commandDiv);
+	commandDiv.focus();
 }
 
 function addLine() {
@@ -185,6 +188,8 @@ function addLine() {
 	newLine.contentEditable = "true";
 	newLine.classList.add("command");
 	document.getElementsByClassName("command-input-container")[0].append(newLine);
+	enterAddLine(newLine);
+	newLine.focus();
 }
 
 function checkCommands() {
@@ -192,6 +197,16 @@ function checkCommands() {
 	for (let i = 0; i < commands.length; i++) {
 		console.log(commands[i].innerHTML);
 	}
+}
+
+function enterAddLine(commandDiv) {
+	commandDiv.addEventListener("keypress", function(event) {
+		var keyCode = event.which || event.keyCode;
+		if (keyCode === 13) {
+			event.preventDefault();
+			addLine();
+		}
+	})
 }
 
 var robot = new Robot();
