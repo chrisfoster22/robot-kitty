@@ -61,7 +61,7 @@ function Game(levels, robot, kitty) {
 	game.board = document.getElementsByClassName('board-container')[0];
 
 	function start() {
-		generateBoard(game.levels[3]);
+		generateBoard(game.levels[0]);
 		initializeListeners();
 	}
 
@@ -190,7 +190,7 @@ function Robot() {
 					console.log(checkSquare);
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
 						console.log("Left", checkSquare);
-						alert("Sorry");
+						alert("Awesome Robt can't move there!");
 						return;
 					}
 				}
@@ -203,7 +203,7 @@ function Robot() {
 					console.log(checkSquare)
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
 						console.log(checkSquare)
-						alert("Sorry");
+						alert("Awesome Robt can't move there!");
 						return;
 						break;
 					}
@@ -218,7 +218,7 @@ function Robot() {
 					if (checkRow) {
 						var checkSquare = checkRow.getElementsByTagName("div")[this.coords[1]];
 							if (!checkSquare || !checkSquare.classList.contains("empty")) {
-								alert("Sorry");
+								alert("Awesome Robt can't move there!");
 								return;
 							}
 						} else {
@@ -235,11 +235,11 @@ function Robot() {
 					if (checkRow) {
 						var checkSquare = checkRow.getElementsByTagName("div")[this.coords[1]];
 							if (!checkSquare || !checkSquare.classList.contains("empty")) {
-								alert("Sorry");
+								alert("Awesome Robt can't move there!");
 								return;
 							}
 						} else {
-						alert("Sorry");
+						alert("Awesome Robt can't move there!");
 						return;
 					}
 				}
