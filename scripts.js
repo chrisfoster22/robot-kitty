@@ -61,7 +61,7 @@ function Game(levels, robot, kitty) {
 	game.board = document.getElementsByClassName('board-container')[0];
 
 	function start() {
-		generateBoard(game.levels[3]);
+		generateBoard(game.levels[0]);
 		initializeListeners();
 	}
 
