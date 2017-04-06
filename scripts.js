@@ -41,7 +41,15 @@ var levelSix = {
 	board: [['mountain', 'mountain', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'river', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'empty', 'empty']]
 }
 
-var levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix];
+var levelSeven = {
+	kittyPlacement: [4, 0],
+	robotPlacement: [0, 4],
+	loop: 2,
+	commandsAvailable: ["move(direction, distance)", "jump(direction)"],
+	board: [['mountain', 'mountain', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'river', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'empty', 'empty']]
+}
+
+var levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix, levelSeven];
 
 var robot = new Robot();
 var kitty = new Kitty();
@@ -53,15 +61,16 @@ myGame.start();
 function Game(levels, robot, kitty) {
 	var game = this;
 	game.levels = levels;
-	game.currentLevel = 0;
+	game.currentLevel = 6;
 	game.start = start;
 	game.generateBoard = generateBoard;
 	game.checkWin = checkWin;
 	game.checkCommands = checkCommands;
 	game.board = document.getElementsByClassName('board-container')[0];
+	game.loopContainer = document.getElementsByClassName('loop-container')[0];
 
 	function start() {
-		generateBoard(game.levels[0]);
+		generateBoard(game.levels[game.currentLevel]);
 		initializeListeners();
 	}
 
@@ -80,6 +89,11 @@ function Game(levels, robot, kitty) {
 		[robot, kitty].map(function(robotOrKitty) {
 			place(robotOrKitty, level);
 		});
+
+		if (level.loop) {
+			game.loopContainer.style.display = "inline-block";
+			game.loopContainer.style.backgroundImage = "url('loop-" + level.loop + ".png')";
+		}
 
 	}
 
@@ -123,25 +137,44 @@ function Game(levels, robot, kitty) {
 		}
 	}
 	function checkCommands() {
+
+		var commandObjects = [];
 		var commands = document.getElementsByClassName("command");
 		for (let i = 0; i < commands.length; i++) {
 			if (commands[i].innerHTML) {
-				setTimeout(function() {
-					var fnName = commands[i].innerHTML.split('(')[0];
-					var fnParams = [];
-					if (fnName === "move") {
-						fnParams = commands[i].innerHTML.split('(')[1].split(', ');
-						fnParams[1] = parseInt(fnParams[1].slice(0, 1));
+				var commandObject = {};
+					commandObject.fnName = commands[i].innerHTML.split('(')[0];
+					commandObject.fnParams = [];
+					if (commandObject.fnName === "move") {
+						commandObject.fnParams = commands[i].innerHTML.split('(')[1].split(', ');
+						commandObject.fnParams[1] = parseInt(commandObject.fnParams[1].slice(0, 1));
 					} else {
 						var directionString = commands[i].innerHTML.split('(')[1];
-						fnParams[0] = directionString.substring(0, directionString.length - 1);
+						commandObject.fnParams[0] = directionString.substring(0, directionString.length - 1);
 					}
-					var fn = robot[fnName];
-					if (typeof fn === "function") fn.apply(robot, fnParams);
-				}, (i * 2200))
+					commandObject.fn = robot[commandObject.fnName];
+					commandObjects.push(commandObject);
+
+					if (game.levels[game.currentLevel].loop && i < game.levels[game.currentLevel].loop) {
+						var commandObjectClone = (JSON.parse(JSON.stringify(commandObject)));
+						commandObjectClone.fn = robot[commandObject.fnName];
+						commandObjects.push(commandObjectClone);
+					}
+				// setTimeout(function() {
+				// 	if (typeof fn === "function") fn.apply(robot, fnParams);
+				// }, (i * 2200))
 			}
 		}
-		setTimeout(checkWin, (commands.length * 2200))
+		console.log(commandObjects);
+
+		for (var i = 0; i < commandObjects.length; i++) {
+			var current = i;
+			setTimeout(function() {
+				if (typeof commandObjects[current].fn === "function") commandObjects[current].fn.apply(robot, commandObjects[current].fnParams);
+			}, (i * 2200))
+		}
+
+		setTimeout(checkWin, (commandObjects.length * 2200))
 	}
 
 	function addLine() {
