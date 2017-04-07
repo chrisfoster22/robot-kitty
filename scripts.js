@@ -259,7 +259,7 @@ function Robot() {
 				for (var i = this.coords[1] + jumpAmount; i < this.coords[1] + 1 + amount; i++ ) {
 					var checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
-						alert("Awesome Robot can't move there!");
+						alert("Awesome Robogt can't move there!");
 						return;
 						break;
 					}
