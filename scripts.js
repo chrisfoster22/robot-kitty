@@ -84,7 +84,7 @@ myGame.start();
 function Game(levels, robot, kitty) {
 	var game = this;
 	game.levels = levels;
-	game.currentLevel = 9;
+	game.currentLevel = 0;
 	game.start = start;
 	game.generateBoard = generateBoard;
 	game.checkWin = checkWin;
@@ -157,7 +157,6 @@ function Game(levels, robot, kitty) {
 			game.generateBoard(game.levels[game.currentLevel]);
 		} else {
 			alert("Try again!");
-			console.log(game.levels[game.currentLevel].robotPlacement);
 			robot.coords = game.levels[game.currentLevel].robotPlacement;
 			game.generateBoard(game.levels[game.currentLevel]);
 			robot.element.style.left = "0px";
@@ -171,35 +170,29 @@ function Game(levels, robot, kitty) {
 		for (let i = 0; i < commands.length; i++) {
 			if (commands[i].innerHTML) {
 				var commandObject = {};
-					commandObject.fnName = commands[i].innerHTML.split('(')[0];
-					commandObject.fnParams = [];
-					if (commandObject.fnName === "move") {
-						commandObject.fnParams = commands[i].innerHTML.split('(')[1].split(', ');
-						commandObject.fnParams[1] = parseInt(commandObject.fnParams[1].slice(0, 1));
-					} else {
-						var directionString = commands[i].innerHTML.split('(')[1];
-						commandObject.fnParams[0] = directionString.substring(0, directionString.length - 1);
-					}
-					commandObject.fn = robot[commandObject.fnName];
-					commandObjects.push(commandObject);
+				commandObject.fnName = commands[i].innerHTML.split('(')[0];
+				commandObject.fnParams = [];
+				if (commandObject.fnName === "move") {
+					commandObject.fnParams = commands[i].innerHTML.split('(')[1].split(', ');
+					commandObject.fnParams[1] = parseInt(commandObject.fnParams[1].slice(0, 1));
+				} else {
+					var directionString = commands[i].innerHTML.split('(')[1];
+					commandObject.fnParams[0] = directionString.substring(0, directionString.length - 1);
+				}
+				commandObject.fn = robot[commandObject.fnName];
+				commandObjects.push(commandObject);
 
-					var loop = game.levels[game.currentLevel].loop;
-					if ( loop && (i + 1 === loop)) {
-						var length = commandObjects.length;
-						console.log("LENGTH:", length);
-						for (var j = 0; j < length; j++) {
-							var commandObjectClone = (JSON.parse(JSON.stringify(commandObjects[j])));
-							commandObjectClone.fn = robot[commandObjects[j].fnName];
-							commandObjects.push(commandObjectClone);
-							console.log(j);
-						}
+				var loop = game.levels[game.currentLevel].loop;
+				if ( loop && (i + 1 === loop)) {
+					var length = commandObjects.length;
+					for (var j = 0; j < length; j++) {
+						var commandObjectClone = (JSON.parse(JSON.stringify(commandObjects[j])));
+						commandObjectClone.fn = robot[commandObjects[j].fnName];
+						commandObjects.push(commandObjectClone);
 					}
-				// setTimeout(function() {
-				// 	if (typeof fn === "function") fn.apply(robot, fnParams);
-				// }, (i * 2200))
+				}
 			}
 		}
-		console.log(commandObjects);
 
 		for (var i = 0; i < commandObjects.length; i++) {
 			let current = i;
@@ -246,7 +239,6 @@ function Robot() {
 	this.jump = jump;
 
 	function move(direction, amount, jumpAmount) {
-		console.log(direction, amount);
 		var jumpAmount = jumpAmount || 1;
 		var currentLeft = parseInt(this.element.style["left"].split("px")[0]) || 0;
 		var currentTop = parseInt(this.element.style["top"].split("px")[0]) || 0;
@@ -256,7 +248,6 @@ function Robot() {
 
 					var checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
-						console.log("Left", checkSquare);
 						alert("Awesome Robt can't move there!");
 						return;
 					}
@@ -267,10 +258,8 @@ function Robot() {
 			case "right":
 				for (var i = this.coords[1] + jumpAmount; i < this.coords[1] + 1 + amount; i++ ) {
 					var checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
-					console.log(checkSquare)
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
-						console.log(checkSquare)
-						alert("Awesome Robt can't move there!");
+						alert("Awesome Robot can't move there!");
 						return;
 						break;
 					}
