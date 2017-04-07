@@ -41,7 +41,38 @@ var levelSix = {
 	board: [['mountain', 'mountain', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'river', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'empty', 'empty']]
 }
 
-var levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix];
+var levelSeven = {
+	kittyPlacement: [4, 0],
+	robotPlacement: [0, 4],
+	commandsAvailable: ["move(direction, distance)", "jump(direction)"],
+	board: [['mountain', 'mountain', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'river', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'empty', 'empty']]
+}
+
+var levelEight = {
+	kittyPlacement: [4, 0],
+	robotPlacement: [0, 4],
+	loop: 2,
+	commandsAvailable: ["move(direction, distance)", "jump(direction)"],
+	board: [['mountain', 'mountain', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'mountain', 'mountain'], ['empty', 'empty', 'mountain', 'mountain', 'empty'], ['river', 'river', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'empty', 'empty']]
+}
+
+var levelNine = {
+	kittyPlacement: [2, 4],
+	robotPlacement: [0, 2],
+	loop: 2,
+	commandsAvailable: ["move(direction, distance)"],
+	board: [['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'river', 'river', 'river', 'river'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty']]
+}
+
+var levelTen = {
+	kittyPlacement: [2, 4],
+	robotPlacement: [0, 0],
+	loop: 3,
+	commandsAvailable: ["move(direction, distance)"],
+	board: [['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'empty', 'empty', 'empty', 'river'], ['mountain', 'river', 'empty', 'empty', 'empty'], ['river', 'river', 'river', 'empty', 'river'], ['empty', 'empty', 'empty', 'empty', 'empty']]
+}
+
+var levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix, levelSeven, levelEight, levelNine, levelTen];
 
 var robot = new Robot();
 var kitty = new Kitty();
@@ -53,15 +84,16 @@ myGame.start();
 function Game(levels, robot, kitty) {
 	var game = this;
 	game.levels = levels;
-	game.currentLevel = 0;
+	game.currentLevel = 9;
 	game.start = start;
 	game.generateBoard = generateBoard;
 	game.checkWin = checkWin;
 	game.checkCommands = checkCommands;
 	game.board = document.getElementsByClassName('board-container')[0];
+	game.loopContainer = document.getElementsByClassName('loop-container')[0];
 
 	function start() {
-		generateBoard(game.levels[0]);
+		generateBoard(game.levels[game.currentLevel]);
 		initializeListeners();
 	}
 
@@ -81,10 +113,18 @@ function Game(levels, robot, kitty) {
 			place(robotOrKitty, level);
 		});
 
+		if (level.loop) {
+			game.loopContainer.style.display = "inline-block";
+			game.loopContainer.style.backgroundImage = "url('loop-" + level.loop + ".png')";
+			document.getElementsByClassName("num-container")[0].style.paddingTop = "45px";
+		}
+
 	}
 
 	function place(robotOrKitty, level) {
-		robotOrKitty.coords = level[robotOrKitty.name + "Placement"];
+		robotOrKitty.coords = [];
+		robotOrKitty.coords.push(level[robotOrKitty.name + "Placement"][0]);
+		robotOrKitty.coords.push(level[robotOrKitty.name + "Placement"][1]);
 		var placeRow = robotOrKitty.coords[0];
 		var placeColumn = robotOrKitty.coords[1];
 		var robotOrKittySpan = document.createElement("span");
@@ -117,32 +157,58 @@ function Game(levels, robot, kitty) {
 			game.generateBoard(game.levels[game.currentLevel]);
 		} else {
 			alert("Try again!");
+			console.log(game.levels[game.currentLevel].robotPlacement);
+			robot.coords = game.levels[game.currentLevel].robotPlacement;
 			game.generateBoard(game.levels[game.currentLevel]);
 			robot.element.style.left = "0px";
 			robot.element.style.top = "0px";
 		}
 	}
 	function checkCommands() {
+
+		var commandObjects = [];
 		var commands = document.getElementsByClassName("command");
 		for (let i = 0; i < commands.length; i++) {
 			if (commands[i].innerHTML) {
-				setTimeout(function() {
-					var fnName = commands[i].innerHTML.split('(')[0];
-					var fnParams = [];
-					if (fnName === "move") {
-						fnParams = commands[i].innerHTML.split('(')[1].split(',');
-						fnParams[1] = fnParams[1][(fnParams[1].length - 2)]
-						fnParams[1] = parseInt(fnParams[1])
+				var commandObject = {};
+					commandObject.fnName = commands[i].innerHTML.split('(')[0];
+					commandObject.fnParams = [];
+					if (commandObject.fnName === "move") {
+						commandObject.fnParams = commands[i].innerHTML.split('(')[1].split(', ');
+						commandObject.fnParams[1] = parseInt(commandObject.fnParams[1].slice(0, 1));
 					} else {
 						var directionString = commands[i].innerHTML.split('(')[1];
-						fnParams[0] = directionString.substring(0, directionString.length - 1);
+						commandObject.fnParams[0] = directionString.substring(0, directionString.length - 1);
 					}
-					var fn = robot[fnName];
-					if (typeof fn === "function") fn.apply(robot, fnParams);
-				}, (i * 2200))
+					commandObject.fn = robot[commandObject.fnName];
+					commandObjects.push(commandObject);
+
+					var loop = game.levels[game.currentLevel].loop;
+					if ( loop && (i + 1 === loop)) {
+						var length = commandObjects.length;
+						console.log("LENGTH:", length);
+						for (var j = 0; j < length; j++) {
+							var commandObjectClone = (JSON.parse(JSON.stringify(commandObjects[j])));
+							commandObjectClone.fn = robot[commandObjects[j].fnName];
+							commandObjects.push(commandObjectClone);
+							console.log(j);
+						}
+					}
+				// setTimeout(function() {
+				// 	if (typeof fn === "function") fn.apply(robot, fnParams);
+				// }, (i * 2200))
 			}
 		}
-		setTimeout(checkWin, (commands.length * 2200))
+		console.log(commandObjects);
+
+		for (var i = 0; i < commandObjects.length; i++) {
+			let current = i;
+			setTimeout(function() {
+				if (typeof commandObjects[current].fn === "function") commandObjects[current].fn.apply(robot, commandObjects[current].fnParams);
+			}, (current * 2200))
+		}
+
+		setTimeout(checkWin, (commandObjects.length * 2200))
 	}
 
 	function addLine() {
@@ -174,12 +240,13 @@ function Game(levels, robot, kitty) {
 function Robot() {
 	this.name = "robot";
 	this.element,
-	this.coords;
+	this.coords = [];
 
 	this.move = move;
 	this.jump = jump;
 
 	function move(direction, amount, jumpAmount) {
+		console.log(direction, amount);
 		var jumpAmount = jumpAmount || 1;
 		var currentLeft = parseInt(this.element.style["left"].split("px")[0]) || 0;
 		var currentTop = parseInt(this.element.style["top"].split("px")[0]) || 0;
@@ -191,7 +258,6 @@ function Robot() {
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
 						console.log("Left", checkSquare);
 						alert("Awesome Robt can't move there!");
-
 						return;
 					}
 				}
@@ -201,10 +267,10 @@ function Robot() {
 			case "right":
 				for (var i = this.coords[1] + jumpAmount; i < this.coords[1] + 1 + amount; i++ ) {
 					var checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
+					console.log(checkSquare)
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
-						console.log(checkSquare);
+						console.log(checkSquare)
 						alert("Awesome Robt can't move there!");
-
 						return;
 						break;
 					}
@@ -288,4 +354,5 @@ function Robot() {
 
 function Kitty() {
 	this.name = "kitty";
+	this.coords = [];
 }

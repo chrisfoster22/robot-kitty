@@ -63,6 +63,24 @@ h2, h3 {
 	width: 100%;
 }
 
+.loop-container {
+	display: none;
+	width: 40px;
+	height: 110px;
+	background-image: url('loop-2.png');
+	background-size: 100%;
+	background-repeat: no-repeat;
+	position: absolute;
+	left: -25px;
+	top: 95px;
+}
+
+.num-container {
+	text-align: center;
+    padding-top: 22px;
+    font-size: 20px;
+}
+
 .row {
 	display: inline-flex;
 	border-top: 2px solid black;
