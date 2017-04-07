@@ -130,8 +130,9 @@ function Game(levels, robot, kitty) {
 					var fnName = commands[i].innerHTML.split('(')[0];
 					var fnParams = [];
 					if (fnName === "move") {
-						fnParams = commands[i].innerHTML.split('(')[1].split(', ');
-						fnParams[1] = parseInt(fnParams[1].slice(0, 1));
+						fnParams = commands[i].innerHTML.split('(')[1].split(',');
+						fnParams[1] = fnParams[1][(fnParams[1].length - 2)]
+						fnParams[1] = parseInt(fnParams[1])
 					} else {
 						var directionString = commands[i].innerHTML.split('(')[1];
 						fnParams[0] = directionString.substring(0, directionString.length - 1);
@@ -187,10 +188,10 @@ function Robot() {
 				for (var i = this.coords[1] - jumpAmount; i > this.coords[1] - 1 - amount; i-- ) {
 
 					var checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
-					console.log(checkSquare);
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
 						console.log("Left", checkSquare);
 						alert("Awesome Robt can't move there!");
+
 						return;
 					}
 				}
@@ -200,10 +201,10 @@ function Robot() {
 			case "right":
 				for (var i = this.coords[1] + jumpAmount; i < this.coords[1] + 1 + amount; i++ ) {
 					var checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
-					console.log(checkSquare)
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
-						console.log(checkSquare)
+						console.log(checkSquare);
 						alert("Awesome Robt can't move there!");
+
 						return;
 						break;
 					}
