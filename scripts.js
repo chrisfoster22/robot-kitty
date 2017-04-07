@@ -44,12 +44,19 @@ var levelSix = {
 var levelSeven = {
 	kittyPlacement: [4, 0],
 	robotPlacement: [0, 4],
-	loop: 2,
 	commandsAvailable: ["move(direction, distance)", "jump(direction)"],
 	board: [['mountain', 'mountain', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'river', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'empty', 'empty']]
 }
 
-var levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix, levelSeven];
+var levelEight = {
+	kittyPlacement: [4, 0],
+	robotPlacement: [0, 4],
+	loop: 2,
+	commandsAvailable: ["move(direction, distance)", "jump(direction)"],
+	board: [['mountain', 'mountain', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'mountain', 'mountain'], ['empty', 'empty', 'mountain', 'mountain', 'empty'], ['river', 'river', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'empty', 'empty']]
+}
+
+var levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix, levelSeven, levelEight];
 
 var robot = new Robot();
 var kitty = new Kitty();
@@ -61,7 +68,7 @@ myGame.start();
 function Game(levels, robot, kitty) {
 	var game = this;
 	game.levels = levels;
-	game.currentLevel = 6;
+	game.currentLevel = 7;
 	game.start = start;
 	game.generateBoard = generateBoard;
 	game.checkWin = checkWin;
@@ -98,7 +105,9 @@ function Game(levels, robot, kitty) {
 	}
 
 	function place(robotOrKitty, level) {
-		robotOrKitty.coords = level[robotOrKitty.name + "Placement"];
+		robotOrKitty.coords = [];
+		robotOrKitty.coords.push(level[robotOrKitty.name + "Placement"][0]);
+		robotOrKitty.coords.push(level[robotOrKitty.name + "Placement"][1]);
 		var placeRow = robotOrKitty.coords[0];
 		var placeColumn = robotOrKitty.coords[1];
 		var robotOrKittySpan = document.createElement("span");
@@ -131,6 +140,8 @@ function Game(levels, robot, kitty) {
 			game.generateBoard(game.levels[game.currentLevel]);
 		} else {
 			alert("Try again!");
+			console.log(game.levels[game.currentLevel].robotPlacement);
+			robot.coords = game.levels[game.currentLevel].robotPlacement;
 			game.generateBoard(game.levels[game.currentLevel]);
 			robot.element.style.left = "0px";
 			robot.element.style.top = "0px";
@@ -155,10 +166,15 @@ function Game(levels, robot, kitty) {
 					commandObject.fn = robot[commandObject.fnName];
 					commandObjects.push(commandObject);
 
-					if (game.levels[game.currentLevel].loop && i < game.levels[game.currentLevel].loop) {
-						var commandObjectClone = (JSON.parse(JSON.stringify(commandObject)));
-						commandObjectClone.fn = robot[commandObject.fnName];
-						commandObjects.push(commandObjectClone);
+					var loop = game.levels[game.currentLevel].loop;
+					if ( loop && (i + 1 === loop)) {
+						console.log(commandObjects.length);
+						for (var j = 0; j < 2; j++) {
+							var commandObjectClone = (JSON.parse(JSON.stringify(commandObjects[j])));
+							commandObjectClone.fn = robot[commandObjects[j].fnName];
+							commandObjects.push(commandObjectClone);
+							console.log(j);
+						}
 					}
 				// setTimeout(function() {
 				// 	if (typeof fn === "function") fn.apply(robot, fnParams);
@@ -168,10 +184,10 @@ function Game(levels, robot, kitty) {
 		console.log(commandObjects);
 
 		for (var i = 0; i < commandObjects.length; i++) {
-			var current = i;
+			let current = i;
 			setTimeout(function() {
 				if (typeof commandObjects[current].fn === "function") commandObjects[current].fn.apply(robot, commandObjects[current].fnParams);
-			}, (i * 2200))
+			}, (current * 2200))
 		}
 
 		setTimeout(checkWin, (commandObjects.length * 2200))
@@ -206,12 +222,13 @@ function Game(levels, robot, kitty) {
 function Robot() {
 	this.name = "robot";
 	this.element,
-	this.coords;
+	this.coords = [];
 
 	this.move = move;
 	this.jump = jump;
 
 	function move(direction, amount, jumpAmount) {
+		console.log(direction, amount);
 		var jumpAmount = jumpAmount || 1;
 		var currentLeft = parseInt(this.element.style["left"].split("px")[0]) || 0;
 		var currentTop = parseInt(this.element.style["top"].split("px")[0]) || 0;
@@ -220,7 +237,6 @@ function Robot() {
 				for (var i = this.coords[1] - jumpAmount; i > this.coords[1] - 1 - amount; i-- ) {
 
 					var checkSquare = document.getElementsByClassName("row")[this.coords[0]].getElementsByTagName("div")[i];
-					console.log(checkSquare);
 					if (!checkSquare || !checkSquare.classList.contains("empty")) {
 						console.log("Left", checkSquare);
 						alert("Awesome Robt can't move there!");
@@ -320,4 +336,5 @@ function Robot() {
 
 function Kitty() {
 	this.name = "kitty";
+	this.coords = [];
 }
