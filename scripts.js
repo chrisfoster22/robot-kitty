@@ -56,7 +56,23 @@ var levelEight = {
 	board: [['mountain', 'mountain', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'mountain', 'mountain'], ['empty', 'empty', 'mountain', 'mountain', 'empty'], ['river', 'river', 'empty', 'empty', 'empty'], ['empty', 'mountain', 'mountain', 'empty', 'empty']]
 }
 
-var levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix, levelSeven, levelEight];
+var levelNine = {
+	kittyPlacement: [2, 4],
+	robotPlacement: [0, 2],
+	loop: 2,
+	commandsAvailable: ["move(direction, distance)"],
+	board: [['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'river', 'river', 'river', 'river'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty'], ['empty', 'empty', 'empty', 'empty', 'empty']]
+}
+
+var levelTen = {
+	kittyPlacement: [2, 4],
+	robotPlacement: [0, 0],
+	loop: 3,
+	commandsAvailable: ["move(direction, distance)"],
+	board: [['empty', 'empty', 'empty', 'empty', 'empty'], ['river', 'empty', 'empty', 'empty', 'river'], ['mountain', 'river', 'empty', 'empty', 'empty'], ['river', 'river', 'river', 'empty', 'river'], ['empty', 'empty', 'empty', 'empty', 'empty']]
+}
+
+var levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix, levelSeven, levelEight, levelNine, levelTen];
 
 var robot = new Robot();
 var kitty = new Kitty();
@@ -68,7 +84,7 @@ myGame.start();
 function Game(levels, robot, kitty) {
 	var game = this;
 	game.levels = levels;
-	game.currentLevel = 7;
+	game.currentLevel = 9;
 	game.start = start;
 	game.generateBoard = generateBoard;
 	game.checkWin = checkWin;
@@ -100,6 +116,7 @@ function Game(levels, robot, kitty) {
 		if (level.loop) {
 			game.loopContainer.style.display = "inline-block";
 			game.loopContainer.style.backgroundImage = "url('loop-" + level.loop + ".png')";
+			document.getElementsByClassName("num-container")[0].style.paddingTop = "45px";
 		}
 
 	}
@@ -168,8 +185,9 @@ function Game(levels, robot, kitty) {
 
 					var loop = game.levels[game.currentLevel].loop;
 					if ( loop && (i + 1 === loop)) {
-						console.log(commandObjects.length);
-						for (var j = 0; j < 2; j++) {
+						var length = commandObjects.length;
+						console.log("LENGTH:", length);
+						for (var j = 0; j < length; j++) {
 							var commandObjectClone = (JSON.parse(JSON.stringify(commandObjects[j])));
 							commandObjectClone.fn = robot[commandObjects[j].fnName];
 							commandObjects.push(commandObjectClone);
